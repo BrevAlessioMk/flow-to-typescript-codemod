@@ -13,6 +13,7 @@ src/test/test-files/*.tsx
 
 .DS_Store
 .vscode/
+.idea/
 *.tsbuildinfo
 
 coverage/

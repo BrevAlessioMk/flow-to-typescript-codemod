@@ -56,9 +56,20 @@ export async function processBatchAsync(
           // Line counting is not important. Ignore error.
         }
 
-        const file: t.File = recast.parse(fileText, {
+        const isVue = filePath.endsWith(".vue");
+        const vueFileScriptText =
+          (fileText.match(/<script>([\s\S]*)<\/script>/)?.[0] ?? "")
+              .replace('<script>', '')
+              .replace('</script>', '');
+
+        const fileTextToParse = isVue ? vueFileScriptText : fileText;
+
+        const file: t.File = recast.parse(
+            fileTextToParse,
+          {
           parser: recastFlowParser,
         });
+
         const isTestFile = filePath.endsWith(".test.js");
         if (hasDeclaration(file)) {
           reporter.foundDeclarationFile(filePath);
@@ -149,7 +160,13 @@ export async function processBatchAsync(
           }
         }
 
-        await fs.outputFile(tsFilePath, newFileText);
+        if (isVue) {
+          const newVueFileText = fileText.replace(/<script lang="ts">([\s\S]*)<\/script>/, `<script>\n${newFileText}\n</script>`);
+          await fs.outputFile(tsFilePath, newVueFileText);
+        } else {
+          await fs.outputFile(tsFilePath, newFileText);
+        }
+
       } catch (error) {
         // Report errors, but don’t crash the worker...
         reporter.error(filePath, error);
