@@ -198,6 +198,7 @@ export async function runPrimaryAsync(options: ConvertCommandCliArgs) {
       const toRemoveCalls = [];
       for (const flowFilePath of flowFilePaths) {
         const wasSkipped =
+          flowFilePath.filePath.endsWith(".vue") ||
           (flowFilePath.fileType === FlowFileType.NO_FLOW &&
             options.skipNoFlow) ||
           (flowFilePath.fileType === FlowFileType.NO_ANNOTATION &&

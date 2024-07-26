@@ -56,13 +56,13 @@ export async function processBatchAsync(
           // Line counting is not important. Ignore error.
         }
 
-        const isVue = filePath.endsWith(".vue");
+        const isVueFile = filePath.endsWith(".vue");
         const vueFileScriptText =
           (fileText.match(/<script>([\s\S]*)<\/script>/)?.[0] ?? "")
               .replace('<script>', '')
               .replace('</script>', '');
 
-        const fileTextToParse = isVue ? vueFileScriptText : fileText;
+        const fileTextToParse = isVueFile ? vueFileScriptText : fileText;
 
         const file: t.File = recast.parse(
             fileTextToParse,
@@ -160,7 +160,7 @@ export async function processBatchAsync(
           }
         }
 
-        if (isVue) {
+        if (isVueFile) {
           const newVueFileText = fileText.replace(/<script lang="ts">([\s\S]*)<\/script>/, `<script>\n${newFileText}\n</script>`);
           await fs.outputFile(tsFilePath, newVueFileText);
         } else {
