@@ -161,7 +161,7 @@ export async function processBatchAsync(
         }
 
         if (isVueFile) {
-          const newVueFileText = fileText.replace(/<script lang="ts">([\s\S]*)<\/script>/, `<script>\n${newFileText}\n</script>`);
+          const newVueFileText = fileText.replace(/<script>([\s\S]*)<\/script>/, `<script lang="ts">\n${newFileText}\n</script>`);
           await fs.outputFile(tsFilePath, newVueFileText);
         } else {
           await fs.outputFile(tsFilePath, newFileText);
