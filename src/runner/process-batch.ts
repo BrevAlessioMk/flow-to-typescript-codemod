@@ -113,7 +113,7 @@ export async function processBatchAsync(
         }
 
         // Write the migrated file to a temporary file since we’re just testing at the moment.
-        const newFileText = recast.print(file, recastOptions).code;
+        let newFileText = recast.print(file, recastOptions).code;
 
         const targetFilePath =
           options.target === ""
@@ -161,7 +161,21 @@ export async function processBatchAsync(
         }
 
         if (isVueFile) {
-          const newVueFileText = fileText.replace(/<script>([\s\S]*)<\/script>/, `<script lang="ts">\n${newFileText}\n</script>`);
+
+          newFileText =  newFileText.replace(
+            "export default {",
+            "export default defineComponent({"
+          );
+          newFileText = newFileText.trimEnd().replace(
+            /.$/,
+            ");"
+          );
+          const closingIndex = newFileText.lastIndexOf('};')
+          newFileText[closingIndex+1] = ')';
+          newFileText[closingIndex+1] = ')';
+          newFileText[closingIndex+2] = ';';
+
+          const newVueFileText = fileText.replace(/<script>([\s\S]*)<\/script>/, `<script lang="ts">\nimport { defineComponent } from 'vue';${newFileText}\n</script>`);
           await fs.outputFile(tsFilePath, newVueFileText);
         } else {
           await fs.outputFile(tsFilePath, newFileText);
