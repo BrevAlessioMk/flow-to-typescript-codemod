@@ -164,7 +164,7 @@ export async function processBatchAsync(
 
           newFileText =  newFileText.replace(
             "export default {",
-            "export default defineComponent({"
+            "export default Vue.extend({"
           );
           newFileText = newFileText.trimEnd().replace(
             /.$/,
@@ -175,7 +175,7 @@ export async function processBatchAsync(
           newFileText[closingIndex+1] = ')';
           newFileText[closingIndex+2] = ';';
 
-          const newVueFileText = fileText.replace(/<script>([\s\S]*)<\/script>/, `<script lang="ts">\nimport { defineComponent } from 'vue';${newFileText}\n</script>`);
+          const newVueFileText = fileText.replace(/<script>([\s\S]*)<\/script>/, `<script lang="ts">\nimport Vue from 'vue';${newFileText}\n</script>`);
           await fs.outputFile(tsFilePath, newVueFileText);
         } else {
           await fs.outputFile(tsFilePath, newFileText);
